@@ -7,12 +7,20 @@ matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 matplotlib.rcParams.update({'font.size': 18})
 
+import pandas as pd 
+# Download the CSV form dropbox via URL provided 
+# http://themlbook.com/wiki/doku.php?id=gradient_descent
+df = pd.read_csv("https://www.dropbox.com/s/jhct243700o216d/Advertising.csv?dl=1")
 
 def plot_original_data():
-    x, y = np.loadtxt("data.txt", delimiter= "\t", unpack = True)
+    #x, y = np.loadtxt("data.txt", delimiter= "\t", unpack = True) #old/not working
+    
+    # Subset the data frame by col name and create array 
+    x = df.radio.values 
+    y = df.sales.values
 
     plt.scatter(x, y, color='#1f77b4', marker='o')
-
+    
     plt.xlabel("Spendings, M$")
     plt.ylabel("Sales, Units")
     plt.title("Sales as a function of radio ad spendings.")
@@ -27,22 +35,22 @@ def update_w_and_b(spendings, sales, w, b, alpha):
     dr_dw = 0.0
     dr_db = 0.0
     N = len(spendings)
-
+    
     for i in range(N):
         dr_dw += -2 * spendings[i] * (sales[i] - (w * spendings[i] + b))
         dr_db += -2 * (sales[i] - (w * spendings[i] + b))
-
+    
     # update w and b
     w = w - (dr_dw/float(N)) * alpha
     b = b - (dr_db/float(N)) * alpha
-
+    
     return w, b
 
 def train(spendings, sales, w, b, alpha, epochs):
     image_counter = 2;
     for e in range(epochs):
         w, b = update_w_and_b(spendings, sales, w, b, alpha)
-
+        
         # log the progress
         if (e == 0) or (e < 3000 and e % 400 == 0) or (e % 3000 == 0):
             print("epoch: ", str(e), "loss: "+str(loss(spendings, sales, w, b)))
@@ -70,7 +78,11 @@ def loss(spendings, sales, w, b):
         total_error += (sales[i] - (w*spendings[i] + b))**2
     return total_error / N
 
-x, y = np.loadtxt("data.txt", delimiter= "\t", unpack = True)
+#x, y = np.loadtxt("data.txt", delimiter= "\t", unpack = True) # old/not working
+x = df.radio.values 
+y = df.sales.values
+
+# Make sure to uncomment this line to invoke the train function and loop through epochs
 #w, b = train(x, y, 0.0, 0.0, 0.001, 15000)
 
 plot_original_data()
